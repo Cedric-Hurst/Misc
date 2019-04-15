@@ -1,0 +1,303 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+
+public class EncryptionAndDecryption extends JFrame implements ActionListener //Main class
+{
+	
+	private static final long serialVersionUID = 1L;
+	
+	public static void main(String[] args)
+	{
+		new EncryptionAndDecryption().setVisible(true);
+	}
+	
+	private EncryptionAndDecryption()
+	{
+		
+		super("Encryption");
+		
+		setSize(410,300);                         // set frame one
+		setResizable(false);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setLayout(null);
+		
+		JFrame secondWindow = new JFrame("Decryption");        //set frame two
+		secondWindow.setSize(410, 300);
+		secondWindow.setResizable(false);
+		secondWindow.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		secondWindow.setLayout(null);
+		
+		JTextField t1,t2,t3,t4;
+		
+		t1 = new JTextField(""); // key
+		t1.setBounds(165, 45, 60, 30);
+		add(t1);
+		
+		t2 = new JTextField(""); // phrase
+		t2.setBounds(50, 110, 300, 30);
+		add(t2);
+		
+		t3 = new JTextField(""); // second page answer phrase
+		t3.setBounds(50, 110, 300, 30);
+		secondWindow.add(t3);
+		
+		t4 = new JTextField(""); //second page key
+		t4.setBounds(165, 45, 60, 30);
+		secondWindow.add(t4);
+		
+		JLabel l1,l2,l3,l5;
+		
+		l1 = new JLabel("Enter Key"); // page one label for key
+		l1.setBounds(167, 20, 200, 30);
+		add(l1);
+		
+		l2 = new JLabel("Enter Phrase"); // page one label for phrase
+		l2.setBounds(158, 85, 200, 30);
+		add(l2);
+		
+		l3 = new JLabel("Your encrypted message."); //  sent label after use of encrypt
+		l3.setBounds(120, 85, 200, 30);
+		secondWindow.add(l3);
+		
+		l5 = new JLabel("Enter Key"); // label for key on second page
+		l5.setBounds(167, 20, 200, 30);
+		secondWindow.add(l5);
+		
+		JButton clearButton1 = new JButton("Clear"); // clear button for first page after first use
+		clearButton1.setBounds(153, 210, 80, 30);
+		clearButton1.addActionListener(new ActionListener() 
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) 
+			{
+			
+				l2.setText("Enter Phrase");
+				l2.setBounds(158, 85, 200, 30);
+				t1.setText("");
+				t2.setText("");
+				
+				
+			}          
+		
+		});
+		
+		JButton clearButton2 = new JButton("Clear"); //clear button for second page
+		clearButton2.setBounds(153, 210, 80, 30);
+		clearButton2.addActionListener(new ActionListener() 
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				
+				l3.setText("Enter Phrase");
+				l3.setBounds(158, 85, 200, 30);
+				t3.setText("");
+				t4.setText("");
+				
+			}          
+		
+		});
+		
+		JButton button = new JButton("Encrypt"); // button to start encrypting and send to second page
+		button.setBounds(153, 180, 80, 30);
+		button.addActionListener(new ActionListener() 
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) // when first page is visible get phrase and key from input and pass variables through encryption then close first page and open second page
+			{
+				String phrase;
+				int key;
+				
+				if(isVisible() == true) 
+				{
+					phrase = t2.getText();
+					key = Integer.parseInt(t1.getText());
+					t3.setText(encryption(phrase,key));
+					setVisible(false);
+				}
+				
+				secondWindow.setVisible(true);
+				secondWindow.add(clearButton2);
+			}          
+	      
+		});
+		add(button);
+		
+		JButton button2 = new JButton("Decrypt"); // button on second page to start decrypting and send back to first page with answer in phrase slot
+		button2.setBounds(153, 180, 80, 30);
+		button2.addActionListener(new ActionListener() 
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) // get text from key and phrase and put into decryption, close out page two and open page one, 		
+			{											  //set new message on page one, and add clear button
+				if(secondWindow.isVisible()==true)
+				{
+				String phrase = t3.getText();
+				int key = Integer.parseInt(t4.getText());
+				
+				secondWindow.setVisible(false);
+				setVisible(true);
+				
+				t2.setText(decryption(phrase,key));
+				l2.setText("Your decrypted message is.");
+				l2.setBounds(120, 85, 200, 30);
+				add(clearButton1);
+				
+				}
+			}          
+		
+		});	
+		secondWindow.add(button2);
+		
+		JMenuBar menubar = new JMenuBar(); // menu bar for first page
+		setJMenuBar(menubar);
+		
+		JMenu menu = new JMenu("File"); // menu for first page
+		menubar.add(menu);
+		
+		JMenuBar menubar2 = new JMenuBar(); //  menu for second page
+		secondWindow.setJMenuBar(menubar2);
+		
+		JMenu menu2 = new JMenu("File");  		 //second page menu
+		menubar2.add(menu2);					
+		JMenuItem clear = new JMenuItem("Clear"); 
+		clear.addActionListener(new ActionListener() // clears all text.
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) 
+			{
+	
+				t1.setText("");
+				t2.setText("");
+				t3.setText("");
+				t4.setText("");
+				
+			}          
+			
+		});
+		menu.add(clear);
+		
+		menu.addSeparator();
+		
+		JMenuItem encrypt = new JMenuItem("Encrypt");
+		encrypt.addActionListener(new ActionListener()  //set page to first page and clear it
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				
+				secondWindow.setVisible(false);
+				setVisible(true);
+				l2.setText("Enter Phrase");
+				l2.setBounds(158, 85, 200, 30);
+				t1.setText("");
+				t2.setText("");
+				
+			}          
+			
+		});
+		menu2.add(encrypt);
+		
+		JMenuItem decrypt = new JMenuItem("Decrypt");
+		decrypt.addActionListener(new ActionListener()  //set page to second page and clear it
+		{
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				
+				secondWindow.setVisible(true);
+				setVisible(false);
+				l3.setText("Enter Phrase");
+				l3.setBounds(158, 85, 200, 30);
+				t3.setText("");
+				t4.setText("");
+				
+			}          
+			
+		});
+		menu.add(decrypt);
+		
+		menu.addSeparator();
+		
+		JMenuItem exit = new JMenuItem("Exit");
+		exit.addActionListener(new ActionListener()  //set page to second page and clear it
+				{
+					
+					@Override
+					public void actionPerformed(ActionEvent arg0) 
+					{
+						
+						System.exit(ABORT);
+						
+					}          
+					
+				});
+		menu.add(exit);	
+		
+	}
+
+	String encryption(String phrase, int key)
+	{
+		
+		int array[] = new int[phrase.length()]; //  set array to size of string
+		char temp;//	temporary space for characters.
+		String answer = "";
+		
+		for(int i = 0; i<phrase.length(); i++) //  first loop to take characters from sting and put into array	
+		{
+					
+			temp = phrase.charAt(i);				// put each character (one at a time) into temporary so it can be cast into a integer.
+			array[i] = ((int)temp+key-i);			// add key to the new integer inside of temporary and assign to the index i of array
+					
+		}
+			
+		for(int i = 0; i<phrase.length();i++) // second loop to take each number in array and make them letters again.	
+		{
+			
+			temp = (char) array[i]; //  cast the integer from array in index i and put into temporary spot and print temporary each loop giving the simulated encrypted message.
+			answer= answer + temp;
+			
+		}
+		
+		return answer;
+	}
+
+	String decryption(String phrase, int key) // same as encryption method
+	{
+		
+		int array[] = new int[phrase.length()]; 
+		char temp;								
+		String answer = "";
+		
+		for(int i = 0; i<phrase.length(); i++) 
+		{
+			
+			temp = phrase.charAt(i);				
+			array[i] = ((int)temp-key+i);	// subtract key and add i (opposite of encrypted to reverse encryption)		
+			
+		}
+	
+		for(int i = 0; i<phrase.length();i++) 
+		{
+			
+			temp = (char) array[i]; 
+			answer= answer + temp;
+			
+		}
+			
+		return answer;
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{}
+		
+}
